@@ -7,13 +7,13 @@ willing.
 
 ## How to use
 
-1. Make a virtual environment `python3 -m venv venv_chirho` and activate it `. venv_chirho/bin/activate`
+1. Make a virtual environment `python3 -m venv venv_chirho` in this directory and activate it `. venv_chirho/bin/activate`
 2. Install all the dependencies `pip install -r requirements_chirho.txt`
 3. Set up [Google oauth2 Web credentials](https://developers.google.com/identity/protocols/oauth2) with access to youtube data api, that can redirect to `http://localhost:4422`.
 4. Copy your `client_secret_*.json` from those credentials to the same directory as this script, name it
    `client_secret_chirho.json`
 5. Copy sample file `stream_preparer_chirho.sample.yml` to `stream_preparer_chirho.yml` in the same directory as this script and fill it in with your
-   desired video information.
+   desired video information and the stream id you want (TODO: Create new stream) that you will use the stream key from in for example OBS.
 6. Run `stream_preparer_chirho.py`
 
 #### And some Twitch instructions, aleluya

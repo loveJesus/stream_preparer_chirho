@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import sys
+import yaml
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -36,12 +37,16 @@ class YouTubeStreamerChirho:
 
     def __init__(self):
         self.youtube_chirho = None
+        self._settings_chirho: dict = None
         self.insert_broadcast_response_chirho: dict = None
         self.bind_broadcast_response_chirho: dict = None
 
     def execute_chirho(self):
+        self._settings_chirho = yaml.safe_load(open("stream_preparer_chirho.yml"))
         self._google_credential_receiver_chirho()
         self._initialize_broadcast_chirho()
+        self._link_stream_response_chirho()
+        self._handle_transitions_chirho()
 
     def _google_credential_receiver_chirho(self):
         """
@@ -83,14 +88,8 @@ class YouTubeStreamerChirho:
                 "contentDetails": dict(
                     enableLowLatency=True, ),
                 "snippet": dict(
-                    title="Love Jesus - Servicio Diario 2022-06-25 בְּרֵאשִׁית/Genesis 5 y ΜΑΘΘΑΙΟΝ/Mateo 4",
-                    description="""
-                        Jesucristo es Señor\n\n
-
-                        Aprendamos a leer la Palabra juntamente en las lenguas de los escritos.\n
-
-                        Oración / Lectura de la Palabra /Animo o Exhortación / Santa Cena / Cantar un Himno / Musica de Fondo
-                        """,
+                    title=self._settings_chirho["video_info_chirho"]["video_title_chirho"],
+                    description=self._settings_chirho["video_info_chirho"]["video_description_chirho"],
                     scheduledStartTime=datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     scheduledEndTime=(datetime.datetime.utcnow() + datetime.timedelta(hours=1)).strftime(
                         '%Y-%m-%dT%H:%M:%SZ'),
@@ -150,7 +149,7 @@ class YouTubeStreamerChirho:
         self.bind_broadcast_response_chirho = self.youtube_chirho.liveBroadcasts().bind(
             part="id,contentDetails",
             id=self.insert_broadcast_response_chirho["id"],
-            streamId="J880LYhXwEjWGBFMBQTMWg1656203433631884",  # insert_stream_response_chirho["id"],
+            streamId=self._settings_chirho["video_info_chirho"]["stream_id_chirho"],  # insert_stream_response_chirho["id"],
         ).execute()
 
         logger_chirho.info("Broadcast bound to stream ALELUYA")
@@ -176,7 +175,7 @@ class YouTubeStreamerChirho:
         # input("Press Enter to continue... ALELUYA")
         logger_chirho.info(
             Fore.GREEN + Back.WHITE + "Make sure stream has started and wait about 10 seconds - Hallelujah" + Fore.RESET)
-        input("Then Press Enter to continue to stream test... ALELUYA")
+        input("Then Press Enter to continue to TRANSITION STREAM to TESTING - ALELUYA")
 
         broadcast_transition_response_chirho = self.youtube_chirho.liveBroadcasts().transition(
             part="id,status",
@@ -187,8 +186,8 @@ class YouTubeStreamerChirho:
             json.dumps(broadcast_transition_response_chirho, indent=4, sort_keys=True))
         logger_chirho.info("Broadcast TESTING BEGUN ALELUYA")
         logger_chirho.info(
-            Fore.GREEN + Back.WHITE + "Make sure stream has started and wait about 10 seconds - Hallelujah" + Fore.RESET)
-        input("Then Press Enter to continue... ALELUYA")
+            Fore.GREEN + Back.WHITE + "Stream in Testing mode wait about 10 seconds - Hallelujah" + Fore.RESET)
+        input("Then Press Enter to continue to TRANSITION STREAM to LIVE - ALELUYA")
 
         broadcast_transition_response_chirho = self.youtube_chirho.liveBroadcasts().transition(
             part="id,status",
@@ -197,7 +196,21 @@ class YouTubeStreamerChirho:
 
         logger_chirho.debug(
             json.dumps(broadcast_transition_response_chirho, indent=4, sort_keys=True))
-        logger_chirho.info(Fore.BLUE + "Finished - Hallelujah")
+
+        logger_chirho.info("Broadcast TESTING BEGUN ALELUYA")
+        logger_chirho.info(
+            Fore.GREEN + Back.WHITE + "Stream in Testing mode wait about 10 seconds - Hallelujah" + Fore.RESET)
+        input("Then Press Enter to continue to TRANSITION STREAM to COMPLETE - ALELUYA")
+
+        broadcast_transition_response_chirho = self.youtube_chirho.liveBroadcasts().transition(
+            part="id,status",
+            broadcastStatus="complete",
+            id=self.insert_broadcast_response_chirho["id"]).execute()
+
+        logger_chirho.debug(
+            json.dumps(broadcast_transition_response_chirho, indent=4, sort_keys=True))
+
+        logger_chirho.info(Fore.RED + "Finished - Hallelujah")
 
 
 def main_chirho():
