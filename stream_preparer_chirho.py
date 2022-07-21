@@ -5,6 +5,7 @@
 # Sample Python code for youtube.channels.list
 # See instructions for running these code samples locally:
 # https://developers.google.com/explorer-help/code-samples#python
+import argparse
 import datetime
 import json
 import logging
@@ -27,7 +28,7 @@ formatter_chirho = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - ' + Back.YELLOW + Fore.BLUE + ' %(message)s' + Style.RESET_ALL)
 handler_chirho.setFormatter(formatter_chirho)
 logger_chirho.addHandler(handler_chirho)
-logger_chirho.info("Starting... ALELUYA")
+
 
 
 class YouTubeStreamerChirho:
@@ -42,11 +43,31 @@ class YouTubeStreamerChirho:
         self.bind_broadcast_response_chirho: dict = None
 
     def execute_chirho(self):
-        self._settings_chirho = yaml.safe_load(open("stream_preparer_chirho.yml"))
+        try:
+            self._settings_chirho = yaml.safe_load(open("stream_preparer_chirho.yml"))
+            logger_chirho.info("Settings loaded - Hallelujah")
+        except Exception as e:
+            logger_chirho.error(Back.RED + Fore.WHITE + " Hallelujah - Settings not loaded - %s" % e)
+            sys.exit(1)
+        self._twitch_preparer_chirho()
         self._google_credential_receiver_chirho()
         self._initialize_broadcast_chirho()
         self._link_stream_response_chirho()
         self._handle_transitions_chirho()
+
+    def _twitch_preparer_chirho(self):
+        """
+        Hallelujah - Prepare the stream for twitch
+        :return:
+        """
+        twitch_id_chirho = int(self._settings_chirho["video_info_chirho"]["twitch_id_chirho"])
+        twitch_title_chirho = self._settings_chirho["video_info_chirho"]["video_title_chirho"].replace('"','\\"')
+        logger_chirho.info("Twitch ID: %s" % twitch_id_chirho)
+        result_code_chirho = os.system('twitch api patch channels -q broadcaster_id=%s -b \'{"title":"%s"}\'' % (
+            twitch_id_chirho, twitch_title_chirho))
+        if result_code_chirho != 0:
+            logger_chirho.error(Back.RED + Fore.WHITE + " Hallelujah - Twitch title not set - Command Error %s" % result_code_chirho)
+
 
     def _google_credential_receiver_chirho(self):
         """
@@ -95,7 +116,7 @@ class YouTubeStreamerChirho:
                         '%Y-%m-%dT%H:%M:%SZ'),
                 ),
                 "status": dict(
-                    privacyStatus="private", )  # options.privacy_status
+                    privacyStatus="public", )  # options.privacy_status
             }
         ).execute()
 
@@ -213,7 +234,23 @@ class YouTubeStreamerChirho:
         logger_chirho.info(Fore.RED + "Finished - Hallelujah")
 
 
+def parse_args_chirho():
+    """
+    Parse the command line arguments God willing
+    :return:
+    """
+    parser = argparse.ArgumentParser(
+        description="Prepare Twitch and/or Youtube Streams for Broadcast - Hallelujah",)
+    parser.add_argument("--config_chirho", default="stream_preparer_chirho.yml", help="Config file - Hallelujah")
+    parser.add_argument("--log_chirho", default=None, help="Log file - Hallelujah")
+    parser.add_argument("--debug_chirho", action="store_true", help="Debug mode - Hallelujah")
+
+    return parser.parse_args()
+
+
 def main_chirho():
+    options_chirho = parse_args_chirho()
+    logger_chirho.info("Starting... ALELUYA")
     YouTubeStreamerChirho().execute_chirho()
 
 
